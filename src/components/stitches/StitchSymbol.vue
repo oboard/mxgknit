@@ -1,20 +1,13 @@
 <template>
-  <div 
-    class="stitch-symbol" 
-    :style="{ 
-      width: `${size * (stitch?.width || 1)}px`, 
-      height: `${size}px`,
-      gridColumn: `span ${stitch?.width || 1}`
-    }"
-  >
-    <img 
-      v-if="stitch?.svgPath" 
-      :src="stitch.svgPath" 
-      :alt="stitch.name"
-      :width="size * (stitch?.width || 1)"
-      :height="size"
-      class="stitch-svg"
-    />
+  <div class="stitch-symbol" :style="{
+    width: `${size * (stitch?.width || 1)}px`,
+    height: `${size}px`,
+    gridColumn: `span ${stitch?.width || 1}`
+  }">
+    <div v-if="stitch?.symbol" v-html="stitch.symbol" class="stitch-svg" :style="{
+      width: `${size * (stitch?.width || 1)}px`,
+      height: `${size}px`
+    }" />
     <span v-else class="symbol-fallback">
       {{ stitch?.symbol || '?' }}
     </span>
@@ -50,7 +43,15 @@ const stitch = computed((): Stitch | null => {
 }
 
 .stitch-svg {
+  display: flex;
+  align-items: center;
+  justify-content: center;
   color: currentColor;
+}
+
+.stitch-svg :deep(svg) {
+  width: 100%;
+  height: 100%;
   object-fit: contain;
 }
 

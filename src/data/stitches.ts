@@ -1,11 +1,21 @@
 import { Stitch, StitchCategory } from '../types/stitch';
+import knitSvg from '../assets/stitches/knit.svg?raw';
+import purlSvg from '../assets/stitches/purl.svg?raw';
+import yarnOverSvg from '../assets/stitches/yarn-over.svg?raw';
+import k2togSvg from '../assets/stitches/k2tog.svg?raw';
+import sskSvg from '../assets/stitches/ssk.svg?raw';
+import slipSvg from '../assets/stitches/slip.svg?raw';
+import cable4FrontSvg from '../assets/stitches/cable-4-front.svg?raw';
+import cable4BackSvg from '../assets/stitches/cable-4-back.svg?raw';
+import k3togSvg from '../assets/stitches/k3tog.svg?raw';
+import makeBobbleSvg from '../assets/stitches/make-bobble.svg?raw';
+import noStitchSvg from '../assets/stitches/no-stitch.svg?raw';
 
 export const defaultStitches: Stitch[] = [
   {
     id: 'k',
     name: 'Knit',
-    symbol: '□',
-    svgPath: '/src/assets/stitches/knit.svg',
+    symbol: knitSvg,
     category: StitchCategory.Basic,
     abbreviation: 'k',
     description: 'Knit stitch (RS: knit, WS: purl)',
@@ -15,8 +25,7 @@ export const defaultStitches: Stitch[] = [
   {
     id: 'p',
     name: 'Purl',
-    symbol: '—',
-    svgPath: '/src/assets/stitches/purl.svg',
+    symbol: purlSvg,
     category: StitchCategory.Basic,
     abbreviation: 'p',
     description: 'Purl stitch (RS: purl, WS: knit)',
@@ -26,8 +35,7 @@ export const defaultStitches: Stitch[] = [
   {
     id: 'yo',
     name: 'Yarn Over',
-    symbol: '○',
-    svgPath: '/src/assets/stitches/yarn-over.svg',
+    symbol: yarnOverSvg,
     category: StitchCategory.Increase,
     abbreviation: 'yo',
     description: 'Yarn over - creates an eyelet and increases by 1 stitch',
@@ -37,8 +45,7 @@ export const defaultStitches: Stitch[] = [
   {
     id: 'k2tog',
     name: 'Knit 2 Together',
-    symbol: '/',
-    svgPath: '/src/assets/stitches/k2tog.svg',
+    symbol: k2togSvg,
     category: StitchCategory.Decrease,
     abbreviation: 'k2tog',
     description: 'Knit 2 stitches together - right-leaning decrease',
@@ -48,8 +55,7 @@ export const defaultStitches: Stitch[] = [
   {
     id: 'ssk',
     name: 'Slip Slip Knit',
-    symbol: '\\',
-    svgPath: '/src/assets/stitches/ssk.svg',
+    symbol: sskSvg,
     category: StitchCategory.Decrease,
     abbreviation: 'ssk',
     description: 'Slip slip knit - left-leaning decrease',
@@ -59,8 +65,7 @@ export const defaultStitches: Stitch[] = [
   {
     id: 'sl',
     name: 'Slip Stitch',
-    symbol: '▽',
-    svgPath: '/src/assets/stitches/slip.svg',
+    symbol: slipSvg,
     category: StitchCategory.Basic,
     abbreviation: 'sl',
     description: 'Slip stitch purlwise',
@@ -70,8 +75,7 @@ export const defaultStitches: Stitch[] = [
   {
     id: 'c4f',
     name: 'Cable 4 Front',
-    symbol: '⟋',
-    svgPath: '/src/assets/stitches/cable-4-front.svg',
+    symbol: cable4FrontSvg,
     category: StitchCategory.Cable,
     abbreviation: 'c4f',
     description: 'Cable 4 front - cross 2 over 2 to the left',
@@ -81,8 +85,7 @@ export const defaultStitches: Stitch[] = [
   {
     id: 'c4b',
     name: 'Cable 4 Back',
-    symbol: '⟍',
-    svgPath: '/src/assets/stitches/cable-4-back.svg',
+    symbol: cable4BackSvg,
     category: StitchCategory.Cable,
     abbreviation: 'c4b',
     description: 'Cable 4 back - cross 2 over 2 to the right',
@@ -92,8 +95,7 @@ export const defaultStitches: Stitch[] = [
   {
     id: 'k3tog',
     name: 'Knit 3 Together',
-    symbol: '⧹',
-    svgPath: '/src/assets/stitches/k3tog.svg',
+    symbol: k3togSvg,
     category: StitchCategory.Decrease,
     abbreviation: 'k3tog',
     description: 'Knit 3 stitches together - centered double decrease',
@@ -103,8 +105,7 @@ export const defaultStitches: Stitch[] = [
   {
     id: 'mb',
     name: 'Make Bobble',
-    symbol: '●',
-    svgPath: '/src/assets/stitches/make-bobble.svg',
+    symbol: makeBobbleSvg,
     category: StitchCategory.Texture,
     abbreviation: 'mb',
     description: 'Make bobble - (k1, p1, k1, p1, k1) in same stitch, turn and purl 5, turn and k5tog',
@@ -114,8 +115,7 @@ export const defaultStitches: Stitch[] = [
   {
     id: 'no-stitch',
     name: 'No Stitch',
-    symbol: '⊗',
-    svgPath: '/src/assets/stitches/no-stitch.svg',
+    symbol: noStitchSvg,
     category: StitchCategory.Basic,
     abbreviation: '-',
     description: 'No stitch placeholder',

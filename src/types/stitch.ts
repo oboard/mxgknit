@@ -2,7 +2,7 @@ export interface Stitch {
   id: string;
   name: string;
   symbol: string; // 保留用于向后兼容，将逐步废弃
-  svgComponent?: string; // SVG组件名称
+  svgPath?: string; // SVG路径
   category: StitchCategory;
   abbreviation: string;
   description: string;

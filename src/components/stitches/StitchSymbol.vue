@@ -1,25 +1,22 @@
 <template>
   <div 
-    class="stitch-symbol flex items-center justify-center"
+    class="stitch-symbol" 
     :style="{ 
-      width: `${size}px`, 
+      width: `${size * (stitch?.width || 1)}px`, 
       height: `${size}px`,
-      gridColumn: `span ${stitch?.width || 1}`,
-      gridRow: `span ${stitch?.height || 1}`
+      gridColumn: `span ${stitch?.width || 1}`
     }"
   >
-    <component 
-      v-if="stitchComponent" 
-      :is="stitchComponent"
-      :size="size"
-      class="w-full h-full"
+    <img 
+      v-if="stitch?.svgPath" 
+      :src="stitch.svgPath" 
+      :alt="stitch.name"
+      :width="size * (stitch?.width || 1)"
+      :height="size"
+      class="stitch-svg"
     />
-    <span 
-      v-else-if="stitch?.symbol" 
-      class="text-center leading-none"
-      :style="{ fontSize: `${size * 0.6}px` }"
-    >
-      {{ stitch.symbol }}
+    <span v-else class="symbol-fallback">
+      {{ stitch?.symbol || '?' }}
     </span>
   </div>
 </template>
@@ -27,7 +24,6 @@
 <script setup lang="ts">
 import { computed } from 'vue';
 import { defaultStitches } from '../../data/stitches';
-import { stitchComponents } from './index';
 import type { Stitch } from '../../types/stitch';
 
 interface Props {
@@ -43,15 +39,24 @@ const stitch = computed((): Stitch | null => {
   if (!props.stitchId) return null;
   return defaultStitches.find(s => s.id === props.stitchId) || null;
 });
-
-const stitchComponent = computed(() => {
-  if (!stitch.value?.svgComponent) return null;
-  return stitchComponents[stitch.value.svgComponent as keyof typeof stitchComponents];
-});
 </script>
 
 <style scoped>
 .stitch-symbol {
   position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.stitch-svg {
+  color: currentColor;
+  object-fit: contain;
+}
+
+.symbol-fallback {
+  font-size: 0.8em;
+  text-align: center;
+  color: currentColor;
 }
 </style>

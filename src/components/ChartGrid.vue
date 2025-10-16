@@ -17,12 +17,12 @@
         </div>
 
         <!-- 图表格子 -->
-        <div v-for="(cell, index) in visibleCells" :key="`cell-${cell.row}-${cell.col}`"
+        <div v-for="(cell, _index) in visibleCells" :key="`cell-${cell.row}-${cell.col}`"
           class="border border-base-content/20 cursor-pointer select-none transition-colors hover:bg-primary/10 flex items-center justify-center"
           :class="{
             'bg-primary/20': isCellSelected(cell.row, cell.col),
             'bg-base-200': (cell.row + cell.col) % 2 === 0 && !isCellSelected(cell.row, cell.col),
-            'bg-accent/10': cell.cellType === 'occupied',
+            'multi-cell-stitch': cell.cellType === 'primary' && getStitchWidth(cell) > 1,
           }" :style="getCellStyle(cell)" @click="handleCellClick(cell.row, cell.col)"
           @mousedown.prevent="handleMouseDown(cell.row, cell.col)" @mouseenter="handleMouseEnter(cell.row, cell.col)"
           @mouseup="handleMouseUp">
@@ -36,7 +36,6 @@
 <script setup lang="ts">
 import { ref, computed } from 'vue';
 import { defaultStitches } from '../data/stitches';
-import { getStitchAt } from '../utils/chartUtils';
 import StitchSymbol from './stitches/StitchSymbol.vue';
 import type { ChartCell } from '../types/stitch';
 
@@ -101,6 +100,12 @@ const isCellSelected = (row: number, col: number) => {
   return selectedCells.value.has(getCellKey(row, col));
 };
 
+const getStitchWidth = (cell: ChartCell) => {
+  if (cell.cellType !== 'primary' || !cell.stitchId) return 1;
+  const stitch = defaultStitches.find(s => s.id === cell.stitchId);
+  return stitch?.width || 1;
+};
+
 const handleCellClick = (row: number, col: number) => {
   emit('cell-click', row, col);
 };
@@ -120,3 +125,17 @@ const handleMouseUp = () => {
   isDrawing.value = false;
 };
 </script>
+
+<style scoped>
+.multi-cell-stitch {
+  border: 2px solid currentColor;
+  background: linear-gradient(135deg, rgba(var(--p), 0.1) 0%, rgba(var(--p), 0.05) 100%);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.multi-cell-stitch:hover {
+  background: linear-gradient(135deg, rgba(var(--p), 0.2) 0%, rgba(var(--p), 0.1) 100%);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+}
+</style>

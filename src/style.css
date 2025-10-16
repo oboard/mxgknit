@@ -1,0 +1,18 @@
+@import "tailwindcss";
+
+@plugin "daisyui" {
+  /* biome-ignore lint/correctness/noUnknownProperty: <explanation> */
+  themes:
+    caramellatte --default,
+    halloween --prefersdark;
+}
+
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+#app {
+  min-height: 100vh;
+}

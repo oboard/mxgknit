@@ -1,60 +1,49 @@
 <template>
   <div class="bg-base-100 p-4 rounded-lg overflow-auto">
     <div class="inline-block">
-      <table class="border-collapse" :style="{ fontSize: `${cellSize}px` }">
-        <tbody>
-          <tr v-for="row in rows" :key="row" class="border-0">
-            <td class="text-xs text-center pr-2 text-base-content/50 w-8">
-              {{ row }}
-            </td>
-            <td
-              v-for="col in cols"
-              :key="col"
-              class="border border-base-content/20 text-center cursor-pointer select-none transition-colors hover:bg-primary/10"
-              :class="{
-                'bg-primary/20': isCellSelected(row - 1, col - 1),
-                'bg-base-200': (row + col) % 2 === 0 && !isCellSelected(row - 1, col - 1),
-              }"
-              :style="{
-                width: `${cellSize}px`,
-                height: `${cellSize}px`,
-                minWidth: `${cellSize}px`,
-                minHeight: `${cellSize}px`,
-              }"
-              @click="handleCellClick(row - 1, col - 1)"
-              @mousedown.prevent="handleMouseDown(row - 1, col - 1)"
-              @mouseenter="handleMouseEnter(row - 1, col - 1)"
-              @mouseup="handleMouseUp"
-            >
-              <span v-if="getCellStitch(row - 1, col - 1)" class="inline-block leading-none">
-                {{ getCellStitch(row - 1, col - 1) }}
-              </span>
-            </td>
-          </tr>
-          <tr>
-            <td></td>
-            <td
-              v-for="col in cols"
-              :key="`col-${col}`"
-              class="text-xs text-center pt-2 text-base-content/50"
-            >
-              {{ col }}
-            </td>
-          </tr>
-        </tbody>
-      </table>
+      <div class="grid gap-0 border border-base-content/20" :style="gridStyle">
+        <!-- 行号 -->
+        <div v-for="row in rows" :key="`row-${row}`"
+          class="text-xs text-center flex items-center justify-center text-base-content/50 bg-base-200"
+          :style="{ gridColumn: '1', gridRow: `${row + 1}` }">
+          {{ row }}
+        </div>
+
+        <!-- 列号 -->
+        <div v-for="col in cols" :key="`col-${col}`"
+          class="text-xs text-center flex items-center justify-center text-base-content/50 bg-base-200"
+          :style="{ gridColumn: `${col + 1}`, gridRow: '1' }">
+          {{ col }}
+        </div>
+
+        <!-- 图表格子 -->
+        <div v-for="(cell, index) in visibleCells" :key="`cell-${cell.row}-${cell.col}`"
+          class="border border-base-content/20 cursor-pointer select-none transition-colors hover:bg-primary/10 flex items-center justify-center"
+          :class="{
+            'bg-primary/20': isCellSelected(cell.row, cell.col),
+            'bg-base-200': (cell.row + cell.col) % 2 === 0 && !isCellSelected(cell.row, cell.col),
+            'bg-accent/10': cell.cellType === 'occupied',
+          }" :style="getCellStyle(cell)" @click="handleCellClick(cell.row, cell.col)"
+          @mousedown.prevent="handleMouseDown(cell.row, cell.col)" @mouseenter="handleMouseEnter(cell.row, cell.col)"
+          @mouseup="handleMouseUp">
+          <StitchSymbol v-if="cell.cellType === 'primary'" :stitch-id="cell.stitchId" :size="cellSize * 0.8" />
+        </div>
+      </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, computed } from 'vue';
 import { defaultStitches } from '../data/stitches';
+import { getStitchAt } from '../utils/chartUtils';
+import StitchSymbol from './stitches/StitchSymbol.vue';
+import type { ChartCell } from '../types/stitch';
 
 interface Props {
   rows: number;
   cols: number;
-  cells: Array<{ row: number; col: number; stitchId: string | null }>;
+  cells: ChartCell[];
   selectedStitchId: string | null;
   cellSize?: number;
 }
@@ -74,11 +63,38 @@ const selectedCells = ref<Set<string>>(new Set());
 
 const getCellKey = (row: number, col: number) => `${row}-${col}`;
 
-const getCellStitch = (row: number, col: number) => {
-  const cell = props.cells.find(c => c.row === row && c.col === col);
-  if (!cell || !cell.stitchId) return '';
-  const stitch = defaultStitches.find(s => s.id === cell.stitchId);
-  return stitch?.symbol || '';
+// 计算网格样式
+const gridStyle = computed(() => ({
+  gridTemplateColumns: `40px repeat(${props.cols}, ${props.cellSize}px)`,
+  gridTemplateRows: `40px repeat(${props.rows}, ${props.cellSize}px)`,
+}));
+
+// 只显示实际存在的格子
+const visibleCells = computed(() => {
+  return props.cells.filter(cell => cell.cellType !== 'empty' ||
+    !props.cells.some(c =>
+      c.cellType === 'primary' &&
+      c.row <= cell.row &&
+      c.col <= cell.col &&
+      c.row + (defaultStitches.find(s => s.id === c.stitchId)?.height || 1) > cell.row &&
+      c.col + (defaultStitches.find(s => s.id === c.stitchId)?.width || 1) > cell.col
+    )
+  );
+});
+
+// 获取格子样式
+const getCellStyle = (cell: ChartCell) => {
+  const stitch = cell.cellType === 'primary' && cell.stitchId ?
+    defaultStitches.find(s => s.id === cell.stitchId) : null;
+
+  return {
+    gridColumn: `${cell.col + 2} / span ${stitch?.width || 1}`,
+    gridRow: `${cell.row + 2} / span ${stitch?.height || 1}`,
+    width: `${props.cellSize * (stitch?.width || 1)}px`,
+    height: `${props.cellSize * (stitch?.height || 1)}px`,
+    minWidth: `${props.cellSize * (stitch?.width || 1)}px`,
+    minHeight: `${props.cellSize * (stitch?.height || 1)}px`,
+  };
 };
 
 const isCellSelected = (row: number, col: number) => {

@@ -1,5 +1,6 @@
 import { ref } from 'vue';
 import type { Chart, ChartCell, SerializedChart } from '../types/stitch';
+import { initializeChart as initChartCells, placeStitch, removeStitch } from '../utils/chartUtils';
 
 export function useChart() {
   const chart = ref<Chart>({
@@ -16,7 +17,7 @@ export function useChart() {
     chart.value = {
       rows,
       cols,
-      cells: [],
+      cells: initChartCells(rows, cols),
       name: chart.value.name,
       gauge: chart.value.gauge,
     };
@@ -28,19 +29,22 @@ export function useChart() {
   };
 
   const setCell = (row: number, col: number, stitchId: string | null) => {
-    const existingCell = getCell(row, col);
-    if (existingCell) {
-      existingCell.stitchId = stitchId;
+    if (stitchId) {
+      chart.value.cells = placeStitch(
+        chart.value.cells, 
+        row, 
+        col, 
+        stitchId, 
+        chart.value.rows, 
+        chart.value.cols
+      );
     } else {
-      chart.value.cells.push({ row, col, stitchId });
+      chart.value.cells = removeStitch(chart.value.cells, row, col);
     }
   };
 
   const clearCell = (row: number, col: number) => {
-    const index = chart.value.cells.findIndex(c => c.row === row && c.col === col);
-    if (index !== -1) {
-      chart.value.cells.splice(index, 1);
-    }
+    chart.value.cells = removeStitch(chart.value.cells, row, col);
   };
 
   const getCellKey = (row: number, col: number) => `${row}-${col}`;
